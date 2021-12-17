@@ -1,16 +1,19 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import {promises} from 'fs'
+// import yaml from 'js-yaml'
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    const filePath: string = core.getInput('file')
+    const file = await promises.readFile(filePath, 'utf8')
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
+    let spec
+    try {
+      spec = JSON.parse(file)
+    } catch (e) {
+      //   spec = yaml.load(file)
+    }
+    core.warning(spec.test)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }

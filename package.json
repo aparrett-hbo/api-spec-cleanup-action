@@ -25,7 +25,9 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.6.0"
+    "@actions/core": "^1.6.0",
+    "@types/js-yaml": "^4.0.5",
+    "fs": "0.0.1-security"
   },
   "devDependencies": {
     "@types/node": "^16.10.5",
