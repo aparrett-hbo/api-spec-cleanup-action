@@ -86,6 +86,7 @@ function run() {
             }
             const cleanedDoc = (0, clean_1.clean)(doc);
             if (ext !== 'json') {
+                core.warning(ext);
                 yield fs_1.promises.writeFile(filePath, js_yaml_1.default.dump(cleanedDoc));
             }
             else {

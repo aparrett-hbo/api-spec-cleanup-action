@@ -32,6 +32,7 @@ async function run(): Promise<void> {
     const cleanedDoc = clean(doc)
 
     if (ext !== 'json') {
+      core.warning(ext as string)
       await fs.writeFile(filePath, yaml.dump(cleanedDoc))
     } else {
       await fs.writeFile(filePath, JSON.stringify(cleanedDoc, null, 4))
