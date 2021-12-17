@@ -1,10 +1,10 @@
-name: 'API Spec Cleanup Action'
-description: 'Prepares API Spec Files for Generation by Performing a Cleanup'
+name: 'Open API Doc Cleanup Action'
+description: 'Performs an Opinionated Cleanup on an Open API 3 Document'
 author: 'Anthony Parrett'
 inputs:
   file:
     required: true
-    description: 'Path to API Spec File'
+    description: 'Path to API Document'
 runs:
   using: 'node12'
   main: 'dist/index.js'

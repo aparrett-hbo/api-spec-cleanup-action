@@ -1,6 +1,22 @@
 require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ 545:
+/***/ ((__unused_webpack_module, exports) => {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", ({ value: true }));
+exports.clean = void 0;
+function clean(doc) {
+    doc.info.version = '2';
+    return doc;
+}
+exports.clean = clean;
+
+
+/***/ }),
+
 /***/ 109:
 /***/ (function(__unused_webpack_module, exports, __nccwpck_require__) {
 
@@ -41,23 +57,47 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const core = __importStar(__nccwpck_require__(186));
 const fs_1 = __nccwpck_require__(747);
 const js_yaml_1 = __importDefault(__nccwpck_require__(917));
+const clean_1 = __nccwpck_require__(545);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const filePath = core.getInput('file');
             const file = yield fs_1.promises.readFile(filePath, 'utf8');
-            let spec;
-            try {
-                spec = JSON.parse(file);
+            let doc;
+            const ext = file.split('.').pop();
+            if (ext === 'json') {
+                try {
+                    doc = JSON.parse(file);
+                }
+                catch (e) {
+                    return core.setFailed(`Unable to parse spec file with error: ${e}`);
+                }
             }
-            catch (e) {
-                spec = js_yaml_1.default.load(file);
+            else {
+                try {
+                    doc = js_yaml_1.default.load(file);
+                }
+                catch (e) {
+                    return core.setFailed(`Unable to parse spec file with error: ${e}`);
+                }
             }
-            core.warning(spec.test);
+            if (!doc) {
+                return core.setFailed('Unable to parse spec file.');
+            }
+            const cleanedDoc = (0, clean_1.clean)(doc);
+            if (ext !== 'json') {
+                yield fs_1.promises.writeFile(filePath, js_yaml_1.default.dump(cleanedDoc));
+            }
+            else {
+                yield fs_1.promises.writeFile(filePath, JSON.stringify(cleanedDoc, null, 4));
+            }
         }
         catch (error) {
             if (error instanceof Error)
-                core.setFailed(error.message);
+                return core.setFailed(error.message);
+            if (error instanceof String)
+                return core.setFailed(error);
+            core.setFailed(`Unable to perform cleanup due to unknown error: ${error}`);
         }
     });
 }

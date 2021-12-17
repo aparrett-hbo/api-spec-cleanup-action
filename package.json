@@ -30,7 +30,8 @@
   "dependencies": {
     "@actions/core": "^1.6.0",
     "@types/js-yaml": "^4.0.5",
-    "fs": "0.0.1-security"
+    "fs": "0.0.1-security",
+    "openapi3-ts": "^2.0.1"
   },
   "devDependencies": {
     "@types/node": "^16.10.5",
