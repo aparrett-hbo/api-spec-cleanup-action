@@ -64,7 +64,7 @@ function run() {
             const filePath = core.getInput('file');
             const file = yield fs_1.promises.readFile(filePath, 'utf8');
             let doc;
-            const ext = file.split('.').pop();
+            const ext = filePath.split('.').pop();
             if (ext === 'json') {
                 try {
                     doc = JSON.parse(file);

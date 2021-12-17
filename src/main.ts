@@ -10,7 +10,7 @@ async function run(): Promise<void> {
     const file = await fs.readFile(filePath, 'utf8')
 
     let doc: OpenAPIObject | undefined
-    const ext = file.split('.').pop()
+    const ext = filePath.split('.').pop()
     if (ext === 'json') {
       try {
         doc = JSON.parse(file)
