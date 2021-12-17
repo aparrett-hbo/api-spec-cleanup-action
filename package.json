@@ -9,8 +9,11 @@
     "format": "prettier --write '**/*.ts'",
     "format-check": "prettier --check '**/*.ts'",
     "lint": "eslint src/**/*.ts",
-    "package": "ncc build --source-map --license licenses.txt",
+    "package": "npm run build && ncc build --source-map --license licenses.txt",
     "test": "jest",
+    "tag": "git tag -fa v1 -m \"Update v1 tag\"",
+    "pushv1": "git push origin v1 --force",
+    "release": "npm run package && npm run tag && npm run pushv1",
     "all": "npm run build && npm run format && npm run lint && npm run package && npm test"
   },
   "repository": {
