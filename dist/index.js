@@ -12,7 +12,7 @@ const openapi_types_1 = __nccwpck_require__(194);
 const util_1 = __nccwpck_require__(24);
 var HttpMethods = openapi_types_1.OpenAPIV3.HttpMethods;
 function clean(doc) {
-    var _a, _b;
+    var _a, _b, _c, _d, _e;
     for (const path of Object.keys(doc.paths)) {
         const pathsItemObject = doc.paths[path];
         for (const method of Object.keys(pathsItemObject)) {
@@ -42,6 +42,9 @@ function clean(doc) {
                     const mediaObjectSchema = (_b = (_a = requestBody.content) === null || _a === void 0 ? void 0 : _a[media]) === null || _b === void 0 ? void 0 : _b.schema;
                     if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.body) {
                         requestBody.content[media].schema = mediaObjectSchema.body;
+                    }
+                    if (((_e = (_d = (_c = requestBody.content[media]) === null || _c === void 0 ? void 0 : _c.schema) === null || _d === void 0 ? void 0 : _d.required) === null || _e === void 0 ? void 0 : _e.length) === 0) {
+                        delete requestBody.content[media].schema.required;
                     }
                 }
             }

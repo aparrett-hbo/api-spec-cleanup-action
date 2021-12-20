@@ -39,6 +39,9 @@ export function clean(doc: Document): Document {
                     if (mediaObjectSchema?.body) {
                         requestBody.content[media].schema = mediaObjectSchema.body
                     }
+                    if ((requestBody.content[media]?.schema as SchemaObject)?.required?.length === 0) {
+                        delete (requestBody.content[media].schema as SchemaObject).required
+                    }
                 }
             }
         }

@@ -47,12 +47,34 @@ describe('clean', () => {
                 }
             }
         }
-       
-        
+
         set(doc, 'paths./resource.post.requestBody.content.application/json.schema', schema)
 
         const expected = cloneDeep(defaultAPIDoc as Document)
         set(expected, 'paths./resource.post.requestBody.content.application/json.schema', schema.body)
+        expect(clean(doc)).toEqual(expected)
+    })
+
+    it('should delete empty requireds from requestBody schemas', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            title: 'Post /resource',
+            properties: {
+                resourceId: {
+                    type: 'string',
+                    minLength: 1
+                }
+            },
+            required: []
+        }
+
+        set(doc, 'paths./resource.post.requestBody.content.application/json.schema', schema)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.post.requestBody.content.application/json.schema', {
+            title: schema.title,
+            properties: schema.properties
+        })
         expect(clean(doc)).toEqual(expected)
     })
 })
