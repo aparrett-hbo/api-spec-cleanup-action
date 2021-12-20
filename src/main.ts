@@ -1,15 +1,16 @@
 import * as core from '@actions/core'
 import {promises as fs} from 'fs'
 import yaml from 'js-yaml'
-import {OpenAPIObject} from 'openapi3-ts'
 import {clean} from './clean'
+import Document = OpenAPIV3.Document
+import {OpenAPIV3} from 'openapi-types'
 
 async function run(): Promise<void> {
     try {
         const filePath: string = core.getInput('file')
         const file = await fs.readFile(filePath, 'utf8')
 
-        let doc: OpenAPIObject | undefined
+        let doc: Document | undefined
         const ext = filePath.split('.').pop()
         if (ext === 'json') {
             try {
@@ -21,7 +22,7 @@ async function run(): Promise<void> {
             }
         } else {
             try {
-                doc = yaml.load(file) as OpenAPIObject
+                doc = yaml.load(file) as Document
             } catch (e) {
                 return core.setFailed(
                     `Unable to parse spec file with error: ${e}`
