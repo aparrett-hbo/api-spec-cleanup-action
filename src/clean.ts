@@ -15,16 +15,18 @@ export function clean(doc: Document): Document {
             }
             const operationObject: OperationObject | undefined = pathsItemObject?.[method as HttpMethods]
 
-            if (!operationObject || !operationObject.parameters) {
+            if (!operationObject) {
                 continue
             }
 
-            for (const parameter of operationObject.parameters) {
-                if (isPseudoBool(parameter)) {
-                    if ('schema' in parameter && parameter.schema) {
-                        ;(parameter.schema as SchemaObject).type = 'boolean'
-                        parameter.example = true
-                        delete (parameter.schema as SchemaObject).enum
+            if (operationObject.parameters) {
+                for (const parameter of operationObject.parameters) {
+                    if (isPseudoBool(parameter)) {
+                        if ('schema' in parameter && parameter.schema) {
+                            ;(parameter.schema as SchemaObject).type = 'boolean'
+                            parameter.example = true
+                            delete (parameter.schema as SchemaObject).enum
+                        }
                     }
                 }
             }
