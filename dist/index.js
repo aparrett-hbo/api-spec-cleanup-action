@@ -20,16 +20,18 @@ function clean(doc) {
                 continue;
             }
             const operationObject = pathsItemObject === null || pathsItemObject === void 0 ? void 0 : pathsItemObject[method];
-            if (!operationObject || !operationObject.parameters) {
+            if (!operationObject) {
                 continue;
             }
-            for (const parameter of operationObject.parameters) {
-                if ((0, util_1.isPseudoBool)(parameter)) {
-                    if ('schema' in parameter && parameter.schema) {
-                        ;
-                        parameter.schema.type = 'boolean';
-                        parameter.example = true;
-                        delete parameter.schema.enum;
+            if (operationObject.parameters) {
+                for (const parameter of operationObject.parameters) {
+                    if ((0, util_1.isPseudoBool)(parameter)) {
+                        if ('schema' in parameter && parameter.schema) {
+                            ;
+                            parameter.schema.type = 'boolean';
+                            parameter.example = true;
+                            delete parameter.schema.enum;
+                        }
                     }
                 }
             }
