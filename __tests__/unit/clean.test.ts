@@ -33,4 +33,26 @@ describe('clean', () => {
         })
         expect(clean(doc)).toEqual(expected)
     })
+
+    it('should move requestBody schema bodies up one level', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            body: {
+                title: 'Post /resource',
+                properties: {
+                    resourceId: {
+                        type: 'string',
+                        minLength: 1
+                    }
+                }
+            }
+        }
+       
+        
+        set(doc, 'paths./resource.post.requestBody.content.application/json.schema', schema)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.post.requestBody.content.application/json.schema', schema.body)
+        expect(clean(doc)).toEqual(expected)
+    })
 })

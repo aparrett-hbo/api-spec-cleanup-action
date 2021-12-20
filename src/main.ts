@@ -16,17 +16,13 @@ async function run(): Promise<void> {
             try {
                 doc = JSON.parse(file)
             } catch (e) {
-                return core.setFailed(
-                    `Unable to parse spec file with error: ${e}`
-                )
+                return core.setFailed(`Unable to parse spec file with error: ${e}`)
             }
         } else {
             try {
                 doc = yaml.load(file) as Document
             } catch (e) {
-                return core.setFailed(
-                    `Unable to parse spec file with error: ${e}`
-                )
+                return core.setFailed(`Unable to parse spec file with error: ${e}`)
             }
         }
 
@@ -44,9 +40,7 @@ async function run(): Promise<void> {
     } catch (error) {
         if (error instanceof Error) return core.setFailed(error.message)
         if (error instanceof String) return core.setFailed(error as string)
-        core.setFailed(
-            `Unable to perform cleanup due to unknown error: ${error}`
-        )
+        core.setFailed(`Unable to perform cleanup due to unknown error: ${error}`)
     }
 }
 

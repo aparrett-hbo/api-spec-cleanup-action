@@ -12,6 +12,7 @@ const openapi_types_1 = __nccwpck_require__(194);
 const util_1 = __nccwpck_require__(24);
 var HttpMethods = openapi_types_1.OpenAPIV3.HttpMethods;
 function clean(doc) {
+    var _a, _b;
     for (const path of Object.keys(doc.paths)) {
         const pathsItemObject = doc.paths[path];
         for (const method of Object.keys(pathsItemObject)) {
@@ -29,6 +30,16 @@ function clean(doc) {
                         parameter.schema.type = 'boolean';
                         parameter.example = true;
                         delete parameter.schema.enum;
+                    }
+                }
+            }
+            const requestBody = operationObject === null || operationObject === void 0 ? void 0 : operationObject.requestBody;
+            if (requestBody === null || requestBody === void 0 ? void 0 : requestBody.content) {
+                const mediaKeys = Object.keys(requestBody.content);
+                for (const media of mediaKeys) {
+                    const mediaObjectSchema = (_b = (_a = requestBody.content) === null || _a === void 0 ? void 0 : _a[media]) === null || _b === void 0 ? void 0 : _b.schema;
+                    if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.body) {
+                        requestBody.content[media].schema = mediaObjectSchema.body;
                     }
                 }
             }
@@ -142,8 +153,7 @@ function isPseudoBool(param) {
     var _a;
     if ('schema' in param) {
         const schema = param.schema;
-        return ((schema === null || schema === void 0 ? void 0 : schema.type) === 'string' &&
-            (0, lodash_1.isEqual)((_a = schema === null || schema === void 0 ? void 0 : schema.enum) === null || _a === void 0 ? void 0 : _a.sort(), ['false', 'true']));
+        return (schema === null || schema === void 0 ? void 0 : schema.type) === 'string' && (0, lodash_1.isEqual)((_a = schema === null || schema === void 0 ? void 0 : schema.enum) === null || _a === void 0 ? void 0 : _a.sort(), ['false', 'true']);
     }
     return false;
 }

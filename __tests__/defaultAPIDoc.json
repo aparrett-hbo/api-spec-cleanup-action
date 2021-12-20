@@ -20,6 +20,20 @@
                 "description": "",
                 "tags": [],
                 "parameters": []
+            },
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "headers": {},
+                        "content": {}
+                    }
+                },
+                "summary": "Some resource",
+                "operationId": "operationId",
+                "description": "",
+                "tags": [],
+                "parameters": []
             }
         }
     }
