@@ -77,4 +77,97 @@ describe('clean', () => {
         })
         expect(clean(doc)).toEqual(expected)
     })
+
+    it('should merge request body params and query fields into the parameters property', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            query: {
+                title: 'GET /resource query',
+                type: 'object',
+                properties: {
+                    limit: {
+                        type: 'string',
+                        minLength: 1
+                    }
+                }
+            },
+            params: {
+                title: 'GET /resource params',
+                type: 'object',
+                properties: {
+                    resourceId: {
+                        type: 'string',
+                        minLength: 1
+                    }
+                },
+                required: ['resourceId']
+            }
+        }
+        const parameters = [
+            {
+                name: 'limit',
+                in: 'query',
+                description: 'desc',
+                example: '1',
+                schema: {
+                    type: 'string'
+                }
+            },
+            {
+                name: 'resourceId',
+                in: 'path',
+                description: 'desc',
+                required: true,
+                example: '123',
+                schema: {
+                    type: 'string'
+                }
+            }
+        ]
+
+        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
+        set(doc, 'paths./resource.get.parameters', parameters)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
+        set(expected, 'paths./resource.get.parameters', [
+            { ...parameters[0], schema: schema.query.properties.limit },
+            { ...parameters[1], schema: schema.params.properties.resourceId }
+        ])
+        expect(clean(doc)).toEqual(expected)
+    })
+
+    it('should remove query and params properties from requestBody if they exist', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            query: {
+                title: 'GET /resource query',
+                type: 'object',
+                properties: {
+                    limit: {
+                        type: 'string',
+                        minLength: 1
+                    }
+                }
+            },
+            params: {
+                title: 'GET /resource params',
+                type: 'object',
+                properties: {
+                    resourceId: {
+                        type: 'string',
+                        minLength: 1
+                    }
+                },
+                required: ['resourceId']
+            }
+        }
+
+        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
+    
+        expect(clean(doc)).toEqual(expected)
+    })
 })

@@ -5,6 +5,7 @@ import SchemaObject = OpenAPIV3.SchemaObject
 import HttpMethods = OpenAPIV3.HttpMethods
 import OperationObject = OpenAPIV3.OperationObject
 import RequestBodyObject = OpenAPIV3.RequestBodyObject
+import ParameterObject = OpenAPIV3.ParameterObject
 
 export function clean(doc: Document): Document {
     for (const path of Object.keys(doc.paths)) {
@@ -36,9 +37,47 @@ export function clean(doc: Document): Document {
                 const mediaKeys = Object.keys(requestBody.content)
                 for (const media of mediaKeys) {
                     const mediaObjectSchema = requestBody.content?.[media]?.schema as {[x: string]: any}
+                    if (mediaObjectSchema?.query) {
+                        if (operationObject?.parameters) {
+                            const requestBodyQueryParams = Object.keys(mediaObjectSchema.query?.properties)
+                            operationObject.parameters = (operationObject.parameters as ParameterObject[]).map(p => {
+                                if (p.in !== 'query' || !requestBodyQueryParams.includes(p.name)) {
+                                    return p
+                                }
+                                const newSchema = mediaObjectSchema.query?.properties?.[p.name]
+                                if (!newSchema) {
+                                    return p
+                                }
+                                return {
+                                    ...p,
+                                    schema: newSchema
+                                }
+                            })
+                        }
+                        delete (requestBody.content[media]?.schema as any)?.query
+                    }
+                    if (mediaObjectSchema?.params) {
+                        const requestBodyPathParams = Object.keys(mediaObjectSchema.params?.properties)
+                        operationObject.parameters = (operationObject.parameters as ParameterObject[]).map(p => {
+                            if (p.in !== 'path' || !requestBodyPathParams.includes(p.name)) {
+                                return p
+                            }
+                            const newSchema = mediaObjectSchema.params?.properties?.[p.name]
+                            if (!newSchema) {
+                                return p
+                            }
+                            return {
+                                ...p,
+                                schema: newSchema
+                            }
+                        })
+                        delete (requestBody.content[media]?.schema as any)?.params
+                    }
+
                     if (mediaObjectSchema?.body) {
                         requestBody.content[media].schema = mediaObjectSchema.body
                     }
+
                     if ((requestBody.content[media]?.schema as SchemaObject)?.required?.length === 0) {
                         delete (requestBody.content[media].schema as SchemaObject).required
                     }
