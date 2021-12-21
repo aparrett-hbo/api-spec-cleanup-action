@@ -46,7 +46,7 @@ export function clean(doc: Document): Document {
                     const mediaObjectSchema = requestBody.content?.[media]?.schema as {[x: string]: any}
                     if (mediaObjectSchema?.query) {
                         if (operationObject?.parameters) {
-                            const requestBodyQueryParams = Object.keys(mediaObjectSchema.query?.properties)
+                            const requestBodyQueryParams = Object.keys(mediaObjectSchema.query?.properties || {})
                             operationObject.parameters = (operationObject.parameters as ParameterObject[]).map(p => {
                                 if (p.in !== 'query' || !requestBodyQueryParams.includes(p.name)) {
                                     return p
@@ -64,7 +64,7 @@ export function clean(doc: Document): Document {
                         delete (requestBody.content[media]?.schema as any)?.query
                     }
                     if (mediaObjectSchema?.params) {
-                        const requestBodyPathParams = Object.keys(mediaObjectSchema.params?.properties)
+                        const requestBodyPathParams = Object.keys(mediaObjectSchema.params?.properties || {})
                         operationObject.parameters = (operationObject.parameters as ParameterObject[]).map(p => {
                             if (p.in !== 'path' || !requestBodyPathParams.includes(p.name)) {
                                 return p
