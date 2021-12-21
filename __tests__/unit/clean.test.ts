@@ -62,6 +62,34 @@ describe('clean', () => {
         expect(clean(doc)).toEqual(expected)
     })
 
+    it('should convert boolean enums regardless of original type', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            query: {
+                title: 'GET /resource query',
+                type: 'object',
+                properties: {isTest: {type: 'string', enum: ['true', 'false']}}
+            }
+        }
+        const parameters = [
+            {
+                name: 'isTest',
+                in: 'query',
+                description: 'desc',
+                example: '1',
+                schema: {type: 'boolean'}
+            }
+        ]
+
+        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
+        set(doc, 'paths./resource.get.parameters', parameters)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
+        set(expected, 'paths./resource.get.parameters', [{...parameters[0], example: true, schema: {type: 'boolean'}}])
+        expect(clean(doc)).toEqual(expected)
+    })
+
     it('should move requestBody schema bodies up one level', () => {
         const doc = cloneDeep(defaultAPIDoc as Document)
         const schema = {

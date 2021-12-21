@@ -196,7 +196,7 @@ function isPseudoBool(param) {
     var _a;
     if ('schema' in param) {
         const schema = param.schema;
-        return (schema === null || schema === void 0 ? void 0 : schema.type) === 'string' && (0, lodash_1.isEqual)((_a = schema === null || schema === void 0 ? void 0 : schema.enum) === null || _a === void 0 ? void 0 : _a.sort(), ['false', 'true']);
+        return (0, lodash_1.isEqual)((_a = schema === null || schema === void 0 ? void 0 : schema.enum) === null || _a === void 0 ? void 0 : _a.sort(), ['false', 'true']);
     }
     return false;
 }
