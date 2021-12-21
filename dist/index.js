@@ -48,7 +48,7 @@ function clean(doc) {
                     const mediaObjectSchema = (_b = (_a = requestBody.content) === null || _a === void 0 ? void 0 : _a[media]) === null || _b === void 0 ? void 0 : _b.schema;
                     if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.query) {
                         if (operationObject === null || operationObject === void 0 ? void 0 : operationObject.parameters) {
-                            const requestBodyQueryParams = Object.keys((_c = mediaObjectSchema.query) === null || _c === void 0 ? void 0 : _c.properties);
+                            const requestBodyQueryParams = Object.keys(((_c = mediaObjectSchema.query) === null || _c === void 0 ? void 0 : _c.properties) || {});
                             operationObject.parameters = operationObject.parameters.map(p => {
                                 var _a, _b;
                                 if (p.in !== 'query' || !requestBodyQueryParams.includes(p.name)) {
@@ -64,7 +64,7 @@ function clean(doc) {
                         (_e = (_d = requestBody.content[media]) === null || _d === void 0 ? void 0 : _d.schema) === null || _e === void 0 ? true : delete _e.query;
                     }
                     if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.params) {
-                        const requestBodyPathParams = Object.keys((_f = mediaObjectSchema.params) === null || _f === void 0 ? void 0 : _f.properties);
+                        const requestBodyPathParams = Object.keys(((_f = mediaObjectSchema.params) === null || _f === void 0 ? void 0 : _f.properties) || {});
                         operationObject.parameters = operationObject.parameters.map(p => {
                             var _a, _b;
                             if (p.in !== 'path' || !requestBodyPathParams.includes(p.name)) {
