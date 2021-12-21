@@ -164,7 +164,7 @@ function run() {
             }
             const cleanDoc = (0, clean_1.clean)(doc);
             if (ext !== 'json') {
-                yield fs_1.promises.writeFile(filePath, js_yaml_1.default.dump(cleanDoc));
+                yield fs_1.promises.writeFile(filePath, js_yaml_1.default.dump(cleanDoc, { lineWidth: -1 }));
             }
             else {
                 yield fs_1.promises.writeFile(filePath, JSON.stringify(cleanDoc, null, 4));

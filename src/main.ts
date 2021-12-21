@@ -33,7 +33,7 @@ async function run(): Promise<void> {
         const cleanDoc = clean(doc)
 
         if (ext !== 'json') {
-            await fs.writeFile(filePath, yaml.dump(cleanDoc))
+            await fs.writeFile(filePath, yaml.dump(cleanDoc, {lineWidth: -1}))
         } else {
             await fs.writeFile(filePath, JSON.stringify(cleanDoc, null, 4))
         }
