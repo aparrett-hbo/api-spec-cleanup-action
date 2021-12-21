@@ -42,11 +42,11 @@ function clean(doc) {
                                 if (p.in !== 'query' || !requestBodyQueryParams.includes(p.name)) {
                                     return p;
                                 }
-                                const newSchema = (_b = (_a = mediaObjectSchema.query) === null || _a === void 0 ? void 0 : _a.properties) === null || _b === void 0 ? void 0 : _b[p.name];
-                                if (!newSchema) {
+                                const schema = (_b = (_a = mediaObjectSchema.query) === null || _a === void 0 ? void 0 : _a.properties) === null || _b === void 0 ? void 0 : _b[p.name];
+                                if (!schema) {
                                     return p;
                                 }
-                                return Object.assign(Object.assign({}, p), { schema: newSchema });
+                                return Object.assign(Object.assign({}, p), { schema: Object.assign(Object.assign({}, schema), p.schema) });
                             });
                         }
                         (_e = (_d = requestBody.content[media]) === null || _d === void 0 ? void 0 : _d.schema) === null || _e === void 0 ? true : delete _e.query;
@@ -58,11 +58,11 @@ function clean(doc) {
                             if (p.in !== 'path' || !requestBodyPathParams.includes(p.name)) {
                                 return p;
                             }
-                            const newSchema = (_b = (_a = mediaObjectSchema.params) === null || _a === void 0 ? void 0 : _a.properties) === null || _b === void 0 ? void 0 : _b[p.name];
-                            if (!newSchema) {
+                            const schema = (_b = (_a = mediaObjectSchema.params) === null || _a === void 0 ? void 0 : _a.properties) === null || _b === void 0 ? void 0 : _b[p.name];
+                            if (!schema) {
                                 return p;
                             }
-                            return Object.assign(Object.assign({}, p), { schema: newSchema });
+                            return Object.assign(Object.assign({}, p), { schema: Object.assign(Object.assign({}, schema), p.schema) });
                         });
                         (_h = (_g = requestBody.content[media]) === null || _g === void 0 ? void 0 : _g.schema) === null || _h === void 0 ? true : delete _h.params;
                     }

@@ -39,13 +39,13 @@ export function clean(doc: Document): Document {
                                 if (p.in !== 'query' || !requestBodyQueryParams.includes(p.name)) {
                                     return p
                                 }
-                                const newSchema = mediaObjectSchema.query?.properties?.[p.name]
-                                if (!newSchema) {
+                                const schema = mediaObjectSchema.query?.properties?.[p.name]
+                                if (!schema) {
                                     return p
                                 }
                                 return {
                                     ...p,
-                                    schema: newSchema
+                                    schema: {...schema, ...p.schema}
                                 }
                             })
                         }
@@ -57,13 +57,13 @@ export function clean(doc: Document): Document {
                             if (p.in !== 'path' || !requestBodyPathParams.includes(p.name)) {
                                 return p
                             }
-                            const newSchema = mediaObjectSchema.params?.properties?.[p.name]
-                            if (!newSchema) {
+                            const schema = mediaObjectSchema.params?.properties?.[p.name]
+                            if (!schema) {
                                 return p
                             }
                             return {
                                 ...p,
-                                schema: newSchema
+                                schema: {...schema, ...p.schema}
                             }
                         })
                         delete (requestBody.content[media]?.schema as any)?.params
