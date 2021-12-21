@@ -1,5 +1,6 @@
 import {OpenAPIV3} from 'openapi-types'
-import {isPseudoBool} from './util'
+import {isPseudoBool, distinguishId} from './util'
+import {camelCase} from 'lodash'
 import Document = OpenAPIV3.Document
 import SchemaObject = OpenAPIV3.SchemaObject
 import HttpMethods = OpenAPIV3.HttpMethods
@@ -8,6 +9,7 @@ import RequestBodyObject = OpenAPIV3.RequestBodyObject
 import ParameterObject = OpenAPIV3.ParameterObject
 
 export function clean(doc: Document): Document {
+    const operationIdMap: {[operationId: string]: number} = {}
     for (const path of Object.keys(doc.paths)) {
         const pathsItemObject = doc.paths[path]
         for (const method of Object.keys(pathsItemObject as {})) {
@@ -18,6 +20,11 @@ export function clean(doc: Document): Document {
 
             if (!operationObject) {
                 continue
+            }
+
+            if (operationObject.operationId) {
+                const newId = camelCase(operationObject.operationId)
+                operationObject.operationId = distinguishId(operationIdMap, newId)
             }
 
             if (operationObject.parameters) {

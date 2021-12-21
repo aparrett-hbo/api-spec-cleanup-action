@@ -10,9 +10,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.clean = void 0;
 const openapi_types_1 = __nccwpck_require__(194);
 const util_1 = __nccwpck_require__(24);
+const lodash_1 = __nccwpck_require__(250);
 var HttpMethods = openapi_types_1.OpenAPIV3.HttpMethods;
 function clean(doc) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    const operationIdMap = {};
     for (const path of Object.keys(doc.paths)) {
         const pathsItemObject = doc.paths[path];
         for (const method of Object.keys(pathsItemObject)) {
@@ -22,6 +24,10 @@ function clean(doc) {
             const operationObject = pathsItemObject === null || pathsItemObject === void 0 ? void 0 : pathsItemObject[method];
             if (!operationObject) {
                 continue;
+            }
+            if (operationObject.operationId) {
+                const newId = (0, lodash_1.camelCase)(operationObject.operationId);
+                operationObject.operationId = (0, util_1.distinguishId)(operationIdMap, newId);
             }
             if (operationObject.parameters) {
                 for (const parameter of operationObject.parameters) {
@@ -184,7 +190,7 @@ run();
 "use strict";
 
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.isPseudoBool = void 0;
+exports.distinguishId = exports.isPseudoBool = void 0;
 const lodash_1 = __nccwpck_require__(250);
 function isPseudoBool(param) {
     var _a;
@@ -195,6 +201,18 @@ function isPseudoBool(param) {
     return false;
 }
 exports.isPseudoBool = isPseudoBool;
+function distinguishId(map, id) {
+    if (map[id]) {
+        map[id]++;
+        return `${id}${map[id]}`;
+    }
+    else {
+        // If this is the first instance of an id, there is no reason to append a number.
+        map[id] = 1;
+        return id;
+    }
+}
+exports.distinguishId = distinguishId;
 
 
 /***/ }),

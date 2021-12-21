@@ -170,4 +170,26 @@ describe('clean', () => {
     
         expect(clean(doc)).toEqual(expected)
     })
+
+    it('should camelCase operationIds', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        set(doc, 'paths./resource.get.operationId', 'Operation Id')
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.operationId', 'operationId')
+    
+        expect(clean(doc)).toEqual(expected)
+    })
+
+    it('should make operation ids unique', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        set(doc, 'paths./resource.get.operationId', 'myOperation')
+        set(doc, 'paths./resource.post.operationId', 'myOperation')
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.operationId', 'myOperation')
+        set(expected, 'paths./resource.post.operationId', 'myOperation2')
+    
+        expect(clean(doc)).toEqual(expected)
+    })
 })

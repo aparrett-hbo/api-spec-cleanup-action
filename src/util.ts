@@ -11,3 +11,14 @@ export function isPseudoBool(param: ParameterObject | ReferenceObject): boolean 
     }
     return false
 }
+
+export function distinguishId(map: {[x: string]: number}, id: string): string {
+    if (map[id]) {
+        map[id]++
+        return `${id}${map[id]}`
+    } else {
+        // If this is the first instance of an id, there is no reason to append a number.
+        map[id] = 1
+        return id
+    }
+}
