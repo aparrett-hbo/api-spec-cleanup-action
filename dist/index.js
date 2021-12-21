@@ -29,18 +29,6 @@ function clean(doc) {
                 const newId = (0, lodash_1.camelCase)(operationObject.operationId);
                 operationObject.operationId = (0, util_1.distinguishId)(operationIdMap, newId);
             }
-            if (operationObject.parameters) {
-                for (const parameter of operationObject.parameters) {
-                    if ((0, util_1.isPseudoBool)(parameter)) {
-                        if ('schema' in parameter && parameter.schema) {
-                            ;
-                            parameter.schema.type = 'boolean';
-                            parameter.example = true;
-                            delete parameter.schema.enum;
-                        }
-                    }
-                }
-            }
             const requestBody = operationObject === null || operationObject === void 0 ? void 0 : operationObject.requestBody;
             if (requestBody === null || requestBody === void 0 ? void 0 : requestBody.content) {
                 const mediaKeys = Object.keys(requestBody.content);
@@ -83,6 +71,18 @@ function clean(doc) {
                     }
                     if (((_l = (_k = (_j = requestBody.content[media]) === null || _j === void 0 ? void 0 : _j.schema) === null || _k === void 0 ? void 0 : _k.required) === null || _l === void 0 ? void 0 : _l.length) === 0) {
                         delete requestBody.content[media].schema.required;
+                    }
+                }
+            }
+            if (operationObject.parameters) {
+                for (const parameter of operationObject.parameters) {
+                    if ((0, util_1.isPseudoBool)(parameter)) {
+                        if ('schema' in parameter && parameter.schema) {
+                            ;
+                            parameter.schema.type = 'boolean';
+                            parameter.example = true;
+                            delete parameter.schema.enum;
+                        }
                     }
                 }
             }

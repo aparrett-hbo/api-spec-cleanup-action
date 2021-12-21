@@ -34,6 +34,34 @@ describe('clean', () => {
         expect(clean(doc)).toEqual(expected)
     })
 
+    it('should convert boolean enums after merging params', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            query: {
+                title: 'GET /resource query',
+                type: 'object',
+                properties: {isTest: {type: 'string', enum: ['true', 'false']}}
+            }
+        }
+        const parameters = [
+            {
+                name: 'isTest',
+                in: 'query',
+                description: 'desc',
+                example: '1',
+                schema: {type: 'string', enum: ['true', 'false']}
+            }
+        ]
+
+        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
+        set(doc, 'paths./resource.get.parameters', parameters)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
+        set(expected, 'paths./resource.get.parameters', [{...parameters[0], example: true, schema: {type: 'boolean'}}])
+        expect(clean(doc)).toEqual(expected)
+    })
+
     it('should move requestBody schema bodies up one level', () => {
         const doc = cloneDeep(defaultAPIDoc as Document)
         const schema = {
@@ -131,8 +159,8 @@ describe('clean', () => {
         const expected = cloneDeep(defaultAPIDoc as Document)
         set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
         set(expected, 'paths./resource.get.parameters', [
-            { ...parameters[0], schema: schema.query.properties.limit },
-            { ...parameters[1], schema: schema.params.properties.resourceId }
+            {...parameters[0], schema: schema.query.properties.limit},
+            {...parameters[1], schema: schema.params.properties.resourceId}
         ])
         expect(clean(doc)).toEqual(expected)
     })
@@ -167,7 +195,7 @@ describe('clean', () => {
 
         const expected = cloneDeep(defaultAPIDoc as Document)
         set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
-    
+
         expect(clean(doc)).toEqual(expected)
     })
 
@@ -177,7 +205,7 @@ describe('clean', () => {
 
         const expected = cloneDeep(defaultAPIDoc as Document)
         set(expected, 'paths./resource.get.operationId', 'operationId')
-    
+
         expect(clean(doc)).toEqual(expected)
     })
 
@@ -189,7 +217,7 @@ describe('clean', () => {
         const expected = cloneDeep(defaultAPIDoc as Document)
         set(expected, 'paths./resource.get.operationId', 'myOperation')
         set(expected, 'paths./resource.post.operationId', 'myOperation2')
-    
+
         expect(clean(doc)).toEqual(expected)
     })
 })

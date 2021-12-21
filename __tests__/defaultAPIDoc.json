@@ -30,7 +30,7 @@
                     }
                 },
                 "summary": "Some resource",
-                "operationId": "operationId",
+                "operationId": "operationId2",
                 "description": "",
                 "tags": [],
                 "parameters": []

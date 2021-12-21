@@ -27,18 +27,6 @@ export function clean(doc: Document): Document {
                 operationObject.operationId = distinguishId(operationIdMap, newId)
             }
 
-            if (operationObject.parameters) {
-                for (const parameter of operationObject.parameters) {
-                    if (isPseudoBool(parameter)) {
-                        if ('schema' in parameter && parameter.schema) {
-                            ;(parameter.schema as SchemaObject).type = 'boolean'
-                            parameter.example = true
-                            delete (parameter.schema as SchemaObject).enum
-                        }
-                    }
-                }
-            }
-
             const requestBody = operationObject?.requestBody as RequestBodyObject | undefined
             if (requestBody?.content) {
                 const mediaKeys = Object.keys(requestBody.content)
@@ -87,6 +75,18 @@ export function clean(doc: Document): Document {
 
                     if ((requestBody.content[media]?.schema as SchemaObject)?.required?.length === 0) {
                         delete (requestBody.content[media].schema as SchemaObject).required
+                    }
+                }
+            }
+
+            if (operationObject.parameters) {
+                for (const parameter of operationObject.parameters) {
+                    if (isPseudoBool(parameter)) {
+                        if ('schema' in parameter && parameter.schema) {
+                            ;(parameter.schema as SchemaObject).type = 'boolean'
+                            parameter.example = true
+                            delete (parameter.schema as SchemaObject).enum
+                        }
                     }
                 }
             }
