@@ -13,7 +13,7 @@ const util_1 = __nccwpck_require__(24);
 const lodash_1 = __nccwpck_require__(250);
 var HttpMethods = openapi_types_1.OpenAPIV3.HttpMethods;
 function clean(doc) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     const operationIdMap = {};
     for (const path of Object.keys(doc.paths)) {
         const pathsItemObject = doc.paths[path];
@@ -64,12 +64,13 @@ function clean(doc) {
                                 }
                             }
                         }
-                        (_g = (_f = requestBody.content[media]) === null || _f === void 0 ? void 0 : _f.schema) === null || _g === void 0 ? true : delete _g[prop];
                     }
+                    (_g = (_f = requestBody.content[media]) === null || _f === void 0 ? void 0 : _f.schema) === null || _g === void 0 ? true : delete _g.query;
+                    (_j = (_h = requestBody.content[media]) === null || _h === void 0 ? void 0 : _h.schema) === null || _j === void 0 ? true : delete _j.params;
                     if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.body) {
                         requestBody.content[media].schema = mediaObjectSchema.body;
                     }
-                    if (((_k = (_j = (_h = requestBody.content[media]) === null || _h === void 0 ? void 0 : _h.schema) === null || _j === void 0 ? void 0 : _j.required) === null || _k === void 0 ? void 0 : _k.length) === 0) {
+                    if (((_m = (_l = (_k = requestBody.content[media]) === null || _k === void 0 ? void 0 : _k.schema) === null || _l === void 0 ? void 0 : _l.required) === null || _m === void 0 ? void 0 : _m.length) === 0) {
                         delete requestBody.content[media].schema.required;
                     }
                 }

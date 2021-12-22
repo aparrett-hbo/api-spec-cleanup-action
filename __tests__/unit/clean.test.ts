@@ -230,6 +230,19 @@ describe('clean', () => {
         expect(clean(doc)).toEqual(expected)
     })
 
+    it('should delete query or params in requestBody regardless of their contents', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            query: {},
+            params: {}
+        }
+
+        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
+        expect(clean(doc)).toEqual(expected)
+    })
     it('should create operation parameters array if it does not exist and requestBody params exist', () => {
         const doc = cloneDeep(defaultAPIDoc as Document)
         const schema = {

@@ -64,8 +64,9 @@ export function clean(doc: Document): Document {
                                 }
                             }
                         }
-                        delete (requestBody.content[media]?.schema as any)?.[prop]
                     }
+                    delete (requestBody.content[media]?.schema as any)?.query
+                    delete (requestBody.content[media]?.schema as any)?.params
 
                     if (mediaObjectSchema?.body) {
                         requestBody.content[media].schema = mediaObjectSchema.body
