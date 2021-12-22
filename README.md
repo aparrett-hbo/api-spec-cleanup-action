@@ -1,7 +1,3 @@
-<p align="center">
-  <a href="https://github.com/actions/typescript-action/actions"><img alt="typescript-action status" src="https://github.com/actions/typescript-action/workflows/build-test/badge.svg"></a>
-</p>
-
 # API Document Cleanup Action
 The purpose of this action is to perform a cleanup of an Open API Document so that it will properly generate a Typescript client.
 
