@@ -134,7 +134,7 @@ describe('clean', () => {
         expect(clean(doc)).toEqual(expected)
     })
 
-    it('should merge request body params and query fields into the parameters property', () => {
+    it('should merge requestBody params and query fields into the parameters property', () => {
         const doc = cloneDeep(defaultAPIDoc as Document)
         const schema = {
             query: {
@@ -193,6 +193,69 @@ describe('clean', () => {
         expect(clean(doc)).toEqual(expected)
     })
 
+    it('should create parameters for requestBody params and query fields', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            query: {
+                title: 'GET /resource query',
+                type: 'object',
+                properties: {limit: {type: 'string'}}
+            },
+            params: {
+                title: 'GET /resource params',
+                type: 'object',
+                properties: {resourceId: {type: 'string'}}
+            }
+        }
+        const parameters = [
+            {
+                name: 'limit',
+                in: 'query',
+                schema: {type: 'string'}
+            },
+            {
+                name: 'resourceId',
+                in: 'path',
+                required: true,
+                schema: {type: 'string'}
+            }
+        ]
+
+        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
+        set(doc, 'paths./resource.get.parameters', [])
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
+        set(expected, 'paths./resource.get.parameters', parameters)
+        expect(clean(doc)).toEqual(expected)
+    })
+
+    it('should create operation parameters array if it does not exist and requestBody params exist', () => {
+        const doc = cloneDeep(defaultAPIDoc as Document)
+        const schema = {
+            query: {
+                title: 'GET /resource query',
+                type: 'object',
+                properties: {limit: {type: 'string'}}
+            }
+        }
+        const parameters = [
+            {
+                name: 'limit',
+                in: 'query',
+                schema: {type: 'string'}
+            }
+        ]
+
+        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
+        set(doc, 'paths./resource.get.parameters', undefined)
+
+        const expected = cloneDeep(defaultAPIDoc as Document)
+        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
+        set(expected, 'paths./resource.get.parameters', parameters)
+        expect(clean(doc)).toEqual(expected)
+    })
+
     it('should prefer original property values when merging parameters', () => {
         const doc = cloneDeep(defaultAPIDoc as Document)
         const schema = {
@@ -229,40 +292,6 @@ describe('clean', () => {
         set(expected, 'paths./resource.get.parameters', [
             {...parameters[0], schema: {type: 'number', default: 1, minLength: 1}}
         ])
-        expect(clean(doc)).toEqual(expected)
-    })
-
-    it('should remove query and params properties from requestBody if they exist', () => {
-        const doc = cloneDeep(defaultAPIDoc as Document)
-        const schema = {
-            query: {
-                title: 'GET /resource query',
-                type: 'object',
-                properties: {
-                    limit: {
-                        type: 'string',
-                        minLength: 1
-                    }
-                }
-            },
-            params: {
-                title: 'GET /resource params',
-                type: 'object',
-                properties: {
-                    resourceId: {
-                        type: 'string',
-                        minLength: 1
-                    }
-                },
-                required: ['resourceId']
-            }
-        }
-
-        set(doc, 'paths./resource.get.requestBody.content.application/json.schema', schema)
-
-        const expected = cloneDeep(defaultAPIDoc as Document)
-        set(expected, 'paths./resource.get.requestBody.content.application/json.schema', {})
-
         expect(clean(doc)).toEqual(expected)
     })
 

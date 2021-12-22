@@ -13,7 +13,7 @@ const util_1 = __nccwpck_require__(24);
 const lodash_1 = __nccwpck_require__(250);
 var HttpMethods = openapi_types_1.OpenAPIV3.HttpMethods;
 function clean(doc) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     const operationIdMap = {};
     for (const path of Object.keys(doc.paths)) {
         const pathsItemObject = doc.paths[path];
@@ -29,47 +29,47 @@ function clean(doc) {
                 const newId = (0, lodash_1.camelCase)(operationObject.operationId);
                 operationObject.operationId = (0, util_1.distinguishId)(operationIdMap, newId);
             }
-            const requestBody = operationObject === null || operationObject === void 0 ? void 0 : operationObject.requestBody;
+            const requestBody = operationObject.requestBody;
             if (requestBody === null || requestBody === void 0 ? void 0 : requestBody.content) {
                 const mediaKeys = Object.keys(requestBody.content);
                 for (const media of mediaKeys) {
                     const mediaObjectSchema = (_b = (_a = requestBody.content) === null || _a === void 0 ? void 0 : _a[media]) === null || _b === void 0 ? void 0 : _b.schema;
-                    if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.query) {
-                        if (operationObject === null || operationObject === void 0 ? void 0 : operationObject.parameters) {
-                            const requestBodyQueryParams = Object.keys(((_c = mediaObjectSchema.query) === null || _c === void 0 ? void 0 : _c.properties) || {});
-                            operationObject.parameters = operationObject.parameters.map(p => {
-                                var _a, _b;
-                                if (p.in !== 'query' || !requestBodyQueryParams.includes(p.name)) {
-                                    return p;
-                                }
-                                const schema = (_b = (_a = mediaObjectSchema.query) === null || _a === void 0 ? void 0 : _a.properties) === null || _b === void 0 ? void 0 : _b[p.name];
-                                if (!schema) {
-                                    return p;
-                                }
-                                return Object.assign(Object.assign({}, p), { schema: Object.assign(Object.assign({}, schema), p.schema) });
-                            });
+                    for (const prop of ['query', 'params']) {
+                        const requestBodyQueryParams = Object.keys(((_c = mediaObjectSchema[prop]) === null || _c === void 0 ? void 0 : _c.properties) || {});
+                        if (!requestBodyQueryParams.length) {
+                            continue;
                         }
-                        (_e = (_d = requestBody.content[media]) === null || _d === void 0 ? void 0 : _d.schema) === null || _e === void 0 ? true : delete _e.query;
-                    }
-                    if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.params) {
-                        const requestBodyPathParams = Object.keys(((_f = mediaObjectSchema.params) === null || _f === void 0 ? void 0 : _f.properties) || {});
-                        operationObject.parameters = operationObject.parameters.map(p => {
-                            var _a, _b;
-                            if (p.in !== 'path' || !requestBodyPathParams.includes(p.name)) {
-                                return p;
+                        if (!operationObject.parameters) {
+                            operationObject.parameters = [];
+                        }
+                        if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema[prop]) {
+                            const inProp = prop === 'query' ? 'query' : 'path';
+                            for (const bodyParam of requestBodyQueryParams) {
+                                const pIndex = operationObject.parameters.findIndex(p => p.in === inProp && p.name === bodyParam);
+                                const bodyParamSchema = (_e = (_d = mediaObjectSchema[prop]) === null || _d === void 0 ? void 0 : _d.properties) === null || _e === void 0 ? void 0 : _e[bodyParam];
+                                if (!bodyParamSchema)
+                                    continue;
+                                if (pIndex === -1) {
+                                    // Create the parameter if it doesn't exist.
+                                    const p = { in: inProp, name: bodyParam, schema: bodyParamSchema };
+                                    if (inProp === 'path') {
+                                        p.required = true;
+                                    }
+                                    operationObject.parameters.push(p);
+                                }
+                                else {
+                                    // Merge the requestBody param with the existing parameter.
+                                    ;
+                                    operationObject.parameters[pIndex].schema = Object.assign(Object.assign({}, bodyParamSchema), operationObject.parameters[pIndex].schema);
+                                }
                             }
-                            const schema = (_b = (_a = mediaObjectSchema.params) === null || _a === void 0 ? void 0 : _a.properties) === null || _b === void 0 ? void 0 : _b[p.name];
-                            if (!schema) {
-                                return p;
-                            }
-                            return Object.assign(Object.assign({}, p), { schema: Object.assign(Object.assign({}, schema), p.schema) });
-                        });
-                        (_h = (_g = requestBody.content[media]) === null || _g === void 0 ? void 0 : _g.schema) === null || _h === void 0 ? true : delete _h.params;
+                        }
+                        (_g = (_f = requestBody.content[media]) === null || _f === void 0 ? void 0 : _f.schema) === null || _g === void 0 ? true : delete _g[prop];
                     }
                     if (mediaObjectSchema === null || mediaObjectSchema === void 0 ? void 0 : mediaObjectSchema.body) {
                         requestBody.content[media].schema = mediaObjectSchema.body;
                     }
-                    if (((_l = (_k = (_j = requestBody.content[media]) === null || _j === void 0 ? void 0 : _j.schema) === null || _k === void 0 ? void 0 : _k.required) === null || _l === void 0 ? void 0 : _l.length) === 0) {
+                    if (((_k = (_j = (_h = requestBody.content[media]) === null || _h === void 0 ? void 0 : _h.schema) === null || _j === void 0 ? void 0 : _j.required) === null || _k === void 0 ? void 0 : _k.length) === 0) {
                         delete requestBody.content[media].schema.required;
                     }
                 }

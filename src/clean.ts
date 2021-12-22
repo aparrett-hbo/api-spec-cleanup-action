@@ -27,46 +27,44 @@ export function clean(doc: Document): Document {
                 operationObject.operationId = distinguishId(operationIdMap, newId)
             }
 
-            const requestBody = operationObject?.requestBody as RequestBodyObject | undefined
+            const requestBody = operationObject.requestBody as RequestBodyObject | undefined
             if (requestBody?.content) {
                 const mediaKeys = Object.keys(requestBody.content)
                 for (const media of mediaKeys) {
                     const mediaObjectSchema = requestBody.content?.[media]?.schema as {[x: string]: any}
-                    if (mediaObjectSchema?.query) {
-                        if (operationObject?.parameters) {
-                            const requestBodyQueryParams = Object.keys(mediaObjectSchema.query?.properties || {})
-                            operationObject.parameters = (operationObject.parameters as ParameterObject[]).map(p => {
-                                if (p.in !== 'query' || !requestBodyQueryParams.includes(p.name)) {
-                                    return p
-                                }
-                                const schema = mediaObjectSchema.query?.properties?.[p.name]
-                                if (!schema) {
-                                    return p
-                                }
-                                return {
-                                    ...p,
-                                    schema: {...schema, ...p.schema}
-                                }
-                            })
+                    for (const prop of ['query', 'params']) {
+                        const requestBodyQueryParams = Object.keys(mediaObjectSchema[prop]?.properties || {})
+                        if (!requestBodyQueryParams.length) {
+                            continue
                         }
-                        delete (requestBody.content[media]?.schema as any)?.query
-                    }
-                    if (mediaObjectSchema?.params) {
-                        const requestBodyPathParams = Object.keys(mediaObjectSchema.params?.properties || {})
-                        operationObject.parameters = (operationObject.parameters as ParameterObject[]).map(p => {
-                            if (p.in !== 'path' || !requestBodyPathParams.includes(p.name)) {
-                                return p
+                        if (!operationObject.parameters) {
+                            operationObject.parameters = []
+                        }
+                        if (mediaObjectSchema?.[prop]) {
+                            const inProp = prop === 'query' ? 'query' : 'path'
+                            for (const bodyParam of requestBodyQueryParams) {
+                                const pIndex = (operationObject.parameters as ParameterObject[]).findIndex(
+                                    p => p.in === inProp && p.name === bodyParam
+                                )
+                                const bodyParamSchema = mediaObjectSchema[prop]?.properties?.[bodyParam]
+                                if (!bodyParamSchema) continue
+                                if (pIndex === -1) {
+                                    // Create the parameter if it doesn't exist.
+                                    const p: ParameterObject = {in: inProp, name: bodyParam, schema: bodyParamSchema}
+                                    if (inProp === 'path') {
+                                        p.required = true
+                                    }
+                                    operationObject.parameters.push(p)
+                                } else {
+                                    // Merge the requestBody param with the existing parameter.
+                                    ;(operationObject.parameters[pIndex] as ParameterObject).schema = {
+                                        ...bodyParamSchema,
+                                        ...(operationObject.parameters[pIndex] as ParameterObject).schema
+                                    }
+                                }
                             }
-                            const schema = mediaObjectSchema.params?.properties?.[p.name]
-                            if (!schema) {
-                                return p
-                            }
-                            return {
-                                ...p,
-                                schema: {...schema, ...p.schema}
-                            }
-                        })
-                        delete (requestBody.content[media]?.schema as any)?.params
+                        }
+                        delete (requestBody.content[media]?.schema as any)?.[prop]
                     }
 
                     if (mediaObjectSchema?.body) {
